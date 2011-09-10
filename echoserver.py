@@ -4,10 +4,12 @@ def readmsg(net):
 	if data == 'quit\r\n':
 		net.close()
 		return
-	net.addreply(data)
+	if data == 'ping\r\n':
+		net.addreply('pong\r\n')
 
 if __name__ == '__main__':
-	netevent = reactor.Reactor('',8804)
+	netevent = reactor.Reactor()
 	netevent.register_read_event(readmsg)
-	netevent.eventloop()
+	netevent.listenon('',8804)
+	reactor.eventloop()
 
