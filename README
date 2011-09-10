@@ -1,3 +1,10 @@
-reactor network model based on asyncore
+Reactor network model based on asyncore
 
-It is pretty simple
+Usage:
+ It is pretty simple
+ U just need import reactor
+
+Examples:
+ echosever.py
+ clientserver.py
+
