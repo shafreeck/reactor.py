@@ -22,7 +22,7 @@ class Reactor(asyncore.dispatcher):
 		self.listen(50)
 
 	def connect(self,host,port):
-		asyncore.dispatcher_with_send.connect(self,(host,port))
+		asyncore.dispatcher.connect(self,(host,port))
 	def handle_accept(self):
 		pair = self.accept()
 		if pair is None:
@@ -53,6 +53,8 @@ class Reactor(asyncore.dispatcher):
 	def handle_write(self):
 		if self.__wcallback:
 			self.__wcallback(self)
+		elif self.writable():
+			self.sendreply()
 	def addreply(self,msg):
 		self.__wbuffer = self.__wbuffer +  msg
 
