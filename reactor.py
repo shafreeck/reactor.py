@@ -6,19 +6,20 @@ license:nothing,you can use it for free
 '''
 import asyncore,socket
 
-class Reactor(asyncore.dispatcher_with_send):
+class Reactor(asyncore.dispatcher):
 	def __init__(self,sock=None):
-		asyncore.dispatcher_with_send.__init__(self,sock)
+		asyncore.dispatcher.__init__(self,sock)
 		if not sock:
 			self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.set_reuse_addr()
 		self.__rcallback = None
 		self.__wcallback = None
 		self.__handlers = []
+		self.__wbuffer = ''
 
 	def listenon(self,host,port):
 		self.bind((host,port))
-		self.listen(5)
+		self.listen(50)
 
 	def connect(self,host,port):
 		asyncore.dispatcher_with_send.connect(self,(host,port))
@@ -40,17 +41,20 @@ class Reactor(asyncore.dispatcher_with_send):
 
 	def read(self,num):
 		return self.recv(num)
-	def write(self,data):
-		return self.send(data)
+	def sendreply(self):
+		self.send(self.__wbuffer)
+		self.__wbuffer = ''
+	def writable(self):
+		return len(self.__wbuffer)>0
 
 	def handle_read(self):
 		if self.__rcallback:
 			self.__rcallback(self)
 	def handle_write(self):
 		if self.__wcallback:
-			self.__wcallback()
+			self.__wcallback(self)
 	def addreply(self,msg):
-		self.send(msg)
+		self.__wbuffer = self.__wbuffer +  msg
 
 
 def eventloop(timeout=30):
