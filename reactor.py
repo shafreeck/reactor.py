@@ -19,7 +19,7 @@ class Reactor(asyncore.dispatcher):
 
 	def listenon(self,host,port):
 		self.bind((host,port))
-		self.listen(50)
+		self.listen(128)
 
 	def connect(self,host,port):
 		asyncore.dispatcher.connect(self,(host,port))
